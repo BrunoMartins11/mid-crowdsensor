@@ -55,7 +55,7 @@ var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 func connectToFirestore() (*firestore.Client, context.Context) {
 	// Use a service account
 	ctx := context.Background()
-	sa := option.WithCredentialsFile(os.Getenv("FIRESTORE_SECRETS"))
+	sa := option.WithCredentialsJSON([]byte(os.Getenv("FIRESTORE_SECRETS")))
 	app, err := firebase.NewApp(ctx, nil, sa)
 	if err != nil {
 		log.Fatalln(err)
