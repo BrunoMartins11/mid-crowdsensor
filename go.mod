@@ -9,4 +9,5 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.3.2 // indirect
 	github.com/joho/godotenv v1.3.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93 // indirect
+	google.golang.org/api v0.40.0 // indirect
 )
