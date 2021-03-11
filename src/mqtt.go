@@ -3,22 +3,23 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
 type ReceivedData struct {
-	DeviceID  string
-	ProbeData []ProbeData
+	DeviceID, Token  string
+	ProbeData        []ProbeData
 }
 
 type ProbeData struct {
 	MacAddress, Rssi string
 	PrevDetected     int64 //in milliseconds
-	Timestamp *time.Time
+	Timestamp        *time.Time
 }
 
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
@@ -50,14 +51,14 @@ func printTopicData(payload []byte, topic string) {
 	}
 }
 
-func (data ReceivedData)addTimestampToProbes() {
+func (data ReceivedData) addTimestampToProbes() {
 	for i := range data.ProbeData {
 		currentTime := time.Now()
 		data.ProbeData[i].Timestamp = &currentTime
 	}
 }
 
-func createMQTTClient (){
+func createMQTTClient() MQTT.Client {
 	//create a ClientOptions struct setting the broker address, ClientId, turn
 	//off trace output and set the default message handler
 	opts := MQTT.NewClientOptions().AddBroker(os.Getenv("BROKER_URL"))
@@ -65,18 +66,19 @@ func createMQTTClient (){
 	opts.SetUsername(os.Getenv("MQTT_TOKEN"))
 	opts.SetPassword("")
 	opts.SetDefaultPublishHandler(f)
-
-	//create and start a client using the above ClientOptions
-	c := MQTT.NewClient(opts)
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
+	client := MQTT.NewClient(opts)
+	//create a client using the above ClientOptions
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
 	}
+	return client
+}
 
+func subscribeTopic(client MQTT.Client) {
 	//subscribe to the topic /go-mqtt/sample and request messages to be delivered
 	//at a maximum qos of zero, wait for the receipt to confirm the subscription
-	if token := c.Subscribe(os.Getenv("TOPIC"), 0, nil); token.Wait() && token.Error() != nil {
-		fmt.Println(token.Error())
-		os.Exit(1)
+	if token := client.Subscribe(os.Getenv("TOPIC"), 0, nil); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
 	}
 
 	for !flag {
@@ -84,10 +86,15 @@ func createMQTTClient (){
 	}
 
 	//unsubscribe from /go-mqtt/sample
-	if token := c.Unsubscribe(os.Getenv("TOPIC")); token.Wait() && token.Error() != nil {
-		fmt.Println(token.Error())
-		os.Exit(1)
+	if token := client.Unsubscribe(os.Getenv("TOPIC")); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
 	}
+}
 
-	c.Disconnect(250)
+func publishToken(topic string, message string, client MQTT.Client) {
+	token := client.Publish(topic, 0, false, message)
+
+	if token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
+	}
 }
