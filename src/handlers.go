@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type AuthToken struct {
@@ -27,11 +28,12 @@ func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	token := new(AuthToken)
-	json.NewDecoder(response.Body).Decode(token)
+	err = json.NewDecoder(response.Body).Decode(token)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	msg := strings.Split(token.Token, ".")
 
-	go publishToken("BRUNO_ID4", token.Token, client)
+	go publishToken(device, msg[1]+"."+msg[2], client)
 }

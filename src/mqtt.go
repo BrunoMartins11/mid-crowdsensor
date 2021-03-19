@@ -12,8 +12,8 @@ import (
 )
 
 type ReceivedData struct {
-	DeviceID, Token  string
-	ProbeData        []ProbeData
+	DeviceID, Token string
+	ProbeData       []ProbeData
 }
 
 type ProbeData struct {
@@ -22,20 +22,62 @@ type ProbeData struct {
 	Timestamp        *time.Time
 }
 
+type Fragment struct {
+	Id, End int64 //End 0 if not last, 1 if last fragment
+	Data    string
+}
+
+var fragments = make(map[int64]string)
+
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	topic := msg.Topic()
 	payload := msg.Payload()
-	var data ReceivedData
+	var result map[string]interface{}
+
+	_ = json.Unmarshal(payload, &result)
+	if result["Id"] != nil {
+		handleFragmentArrival(payload)
+	} else if result["DeviceID"] != nil {
+		createProbeData(payload, topic)
+	}
+}
+
+func handleFragmentArrival(payload []byte) {
+	var data Fragment
 	err := json.Unmarshal(payload, &data)
-
-	data.addTimestampToProbes()
-
 	if err != nil {
 		log.Fatalln(err)
 	}
+	fmt.Println()
+	frag, exists := fragments[data.Id]
+	if exists && data.End == 0 {
+		fragments[data.Id] = frag + data.Data
+	} else if exists && data.End == 1 {
+		createProbeDataFromFragments(frag + data.Data)
+		delete(fragments, data.Id)
+	} else {
+		fragments[data.Id] = data.Data
+	}
+}
 
+func createProbeData(payload []byte, topic string) {
+	var data ReceivedData
+	err := json.Unmarshal(payload, &data)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	data.addTimestampToProbes()
 	printTopicData(payload, topic)
+	publishProbesToFirestore(data)
+}
 
+func createProbeDataFromFragments(payload string) {
+	var data ReceivedData
+	err := json.Unmarshal([]byte(payload), &data)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	data.addTimestampToProbes()
 	publishProbesToFirestore(data)
 }
 
