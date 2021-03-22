@@ -66,9 +66,12 @@ func createProbeData(payload []byte, topic string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	data.addTimestampToProbes()
-	printTopicData(payload, topic)
-	publishProbesToFirestore(data)
+
+	if isValidToken(preToken + data.Token) {
+		data.addTimestampToProbes()
+		printTopicData(payload, topic)
+		publishProbesToFirestore(data)
+	}
 }
 
 func createProbeDataFromFragments(payload string) {
@@ -77,8 +80,10 @@ func createProbeDataFromFragments(payload string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	data.addTimestampToProbes()
-	publishProbesToFirestore(data)
+	if isValidToken(preToken + data.Token) {
+		data.addTimestampToProbes()
+		publishProbesToFirestore(data)
+	}
 }
 
 func printTopicData(payload []byte, topic string) {

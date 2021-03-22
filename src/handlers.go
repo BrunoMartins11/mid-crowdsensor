@@ -14,6 +14,8 @@ type AuthToken struct {
 	ExpiresIn int64  `json:"expires_in"`
 }
 
+var preToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+
 func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
 	device := req.URL.Query().Get("device")
 
@@ -28,6 +30,7 @@ func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	token := new(AuthToken)
+
 	err = json.NewDecoder(response.Body).Decode(token)
 
 	if err != nil {
