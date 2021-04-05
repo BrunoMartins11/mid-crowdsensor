@@ -1,4 +1,4 @@
-package main
+package coms
 
 import (
 	"cloud.google.com/go/firestore"
@@ -25,7 +25,7 @@ func connectToFirestore() (*firestore.Client, context.Context) {
 	return client, ctx
 }
 
-func publishProbesToFirestore(probes ReceivedData) {
+func PublishProbesToFirestore(probes ReceivedData) {
 
 	client, ctx := connectToFirestore()
 	for _, probe := range probes.ProbeData {

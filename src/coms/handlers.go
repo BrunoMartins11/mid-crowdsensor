@@ -1,4 +1,4 @@
-package main
+package coms
 
 import (
 	"encoding/json"
@@ -8,15 +8,16 @@ import (
 	"strings"
 )
 
-type AuthToken struct {
+type Token struct {
 	TokenType string `json:"token_type"`
 	Token     string `json:"access_token"`
 	ExpiresIn int64  `json:"expires_in"`
 }
 
-var preToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+var PreToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
 
-func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
+
+func AddDeviceHandler(w http.ResponseWriter, req *http.Request) {
 	device := req.URL.Query().Get("device")
 
 	response, err := http.Get(os.Getenv("IOT_AUTH") + "/signup?username=" + device)
@@ -29,7 +30,7 @@ func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
-	token := new(AuthToken)
+	token := new(Token)
 
 	err = json.NewDecoder(response.Body).Decode(token)
 
@@ -38,5 +39,7 @@ func addDeviceHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	msg := strings.Split(token.Token, ".")
 
-	go publishToken(device, msg[1]+"."+msg[2], client)
+	go PublishToken(device, msg[1]+"."+msg[2], Client)
+
+	w.WriteHeader(http.StatusOK)
 }

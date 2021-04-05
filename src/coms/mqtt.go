@@ -1,8 +1,9 @@
-package main
+package coms
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/BrunoMartins11/mid-crowdsensor/src/auth"
 	"log"
 	"os"
 	"strings"
@@ -27,6 +28,7 @@ type Fragment struct {
 	Data    string
 }
 
+var Client MQTT.Client
 var fragments = make(map[int64]string)
 
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
@@ -44,11 +46,12 @@ var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 
 func handleFragmentArrival(payload []byte) {
 	var data Fragment
+
 	err := json.Unmarshal(payload, &data)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println()
+
 	frag, exists := fragments[data.Id]
 	if exists && data.End == 0 {
 		fragments[data.Id] = frag + data.Data
@@ -67,10 +70,10 @@ func createProbeData(payload []byte, topic string) {
 		log.Fatalln(err)
 	}
 
-	if isValidToken(preToken + data.Token) {
+	if auth.IsValidToken(PreToken + data.Token) {
 		data.addTimestampToProbes()
 		printTopicData(payload, topic)
-		publishProbesToFirestore(data)
+		PublishProbesToFirestore(data)
 	}
 }
 
@@ -80,9 +83,9 @@ func createProbeDataFromFragments(payload string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if isValidToken(preToken + data.Token) {
+	if auth.IsValidToken(PreToken + data.Token) {
 		data.addTimestampToProbes()
-		publishProbesToFirestore(data)
+		PublishProbesToFirestore(data)
 	}
 }
 
@@ -94,7 +97,6 @@ func printTopicData(payload []byte, topic string) {
 
 	if strings.Compare("bye\n", string(payload)) == 0 {
 		fmt.Println("exiting")
-		flag = true
 	}
 }
 
@@ -105,7 +107,7 @@ func (data ReceivedData) addTimestampToProbes() {
 	}
 }
 
-func createMQTTClient() MQTT.Client {
+func CreateMQTTClient() MQTT.Client {
 	//create a ClientOptions struct setting the broker address, ClientId, turn
 	//off trace output and set the default message handler
 	opts := MQTT.NewClientOptions().AddBroker(os.Getenv("BROKER_URL"))
@@ -121,15 +123,11 @@ func createMQTTClient() MQTT.Client {
 	return client
 }
 
-func subscribeTopic(client MQTT.Client) {
+func SubscribeTopic(client MQTT.Client) {
 	//subscribe to the topic /go-mqtt/sample and request messages to be delivered
 	//at a maximum qos of zero, wait for the receipt to confirm the subscription
 	if token := client.Subscribe(os.Getenv("TOPIC"), 0, nil); token.Wait() && token.Error() != nil {
 		log.Fatal(token.Error())
-	}
-
-	for !flag {
-		time.Sleep(1 * time.Second)
 	}
 
 	//unsubscribe from /go-mqtt/sample
@@ -138,7 +136,7 @@ func subscribeTopic(client MQTT.Client) {
 	}
 }
 
-func publishToken(topic string, message string, client MQTT.Client) {
+func PublishToken(topic string, message string, client MQTT.Client) {
 	token := client.Publish(topic, 0, false, message)
 
 	if token.Wait() && token.Error() != nil {

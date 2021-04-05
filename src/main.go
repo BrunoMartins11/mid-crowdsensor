@@ -1,25 +1,23 @@
 package main
 
 import (
+	"github.com/BrunoMartins11/mid-crowdsensor/src/coms"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
-
-	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/joho/godotenv"
 )
 
-var flag = false
-var client MQTT.Client
+
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	http.HandleFunc("/addDevice", addDeviceHandler)
+	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
 
-	client = createMQTTClient()
-	go subscribeTopic(client)
+	coms.Client = coms.CreateMQTTClient()
+	go coms.SubscribeTopic(coms.Client)
 
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }

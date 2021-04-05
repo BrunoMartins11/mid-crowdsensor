@@ -1,4 +1,4 @@
-package main
+package auth
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func isValidToken(token string) bool {
+func IsValidToken(token string) bool {
 	client := &http.Client{}
 	//Submit request
 	request, err := http.NewRequest("GET", os.Getenv("IOT_AUTH") + "/validate", nil)
