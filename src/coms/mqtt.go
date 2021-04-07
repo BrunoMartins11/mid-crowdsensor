@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/BrunoMartins11/mid-crowdsensor/src/auth"
+	"github.com/BrunoMartins11/mid-crowdsensor/src/status"
 	"log"
 	"os"
 	"strings"
@@ -14,13 +15,7 @@ import (
 
 type ReceivedData struct {
 	DeviceID, Token string
-	ProbeData       []ProbeData
-}
-
-type ProbeData struct {
-	MacAddress, Rssi string
-	PrevDetected     int64 //in milliseconds
-	Timestamp        *time.Time
+	ProbeData       []status.ProbeData
 }
 
 type Fragment struct {
@@ -85,6 +80,9 @@ func createProbeDataFromFragments(payload string) {
 	}
 	if auth.IsValidToken(PreToken + data.Token) {
 		data.addTimestampToProbes()
+		for _, val := range data.ProbeData{
+			status.ManageNewProbe(val)
+		}
 		PublishProbesToFirestore(data)
 	}
 }
@@ -103,7 +101,7 @@ func printTopicData(payload []byte, topic string) {
 func (data ReceivedData) addTimestampToProbes() {
 	for i := range data.ProbeData {
 		currentTime := time.Now()
-		data.ProbeData[i].Timestamp = &currentTime
+		data.ProbeData[i].Timestamp = currentTime
 	}
 }
 
