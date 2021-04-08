@@ -179,16 +179,32 @@ func TestInitializeCleanup(t *testing.T){
 		PrevDetected: 12,
 		Timestamp:    time.Now(),
 	}
+
+	data2 := status.ProbeData{
+		MacAddress:   "12345",
+		Rssi:         "23",
+		PrevDetected: 12,
+		Timestamp:    time.Date(1998, time.August, 1, 1,1,1,1, loc),
+	}
 	status.State.PotArrival[data.MacAddress] = data
 	status.State.Arrived[data.MacAddress] = data
-	status.State.PotArrival[data.MacAddress] = data
+	status.State.PotDeparture[data2.MacAddress] = data2
 
 	status.State.PotArrival[data1.MacAddress] = data1
 	status.State.Arrived[data1.MacAddress] = data1
 	status.State.PotDeparture[data1.MacAddress] = data1
 
 	status.State.InitializeCleanup()
-	_, ok := status.State.PotArrival["123"]
+
+	_, ok := status.State.PotDeparture["123"]
+	assert.Equal(t, true, ok)
+	_, ok = status.State.PotDeparture["1234"]
+	assert.Equal(t, true, ok)
+	_, ok = status.State.PotDeparture["12345"]
+	assert.Equal(t, false, ok)
+
+
+	_, ok = status.State.PotArrival["123"]
 	assert.Equal(t, false, ok)
 	_, ok = status.State.PotArrival["1234"]
 	assert.Equal(t, true, ok)
@@ -198,10 +214,7 @@ func TestInitializeCleanup(t *testing.T){
 	_, ok = status.State.Arrived["1234"]
 	assert.Equal(t, true, ok)
 
-	_, ok = status.State.PotDeparture["123"]
-	assert.Equal(t, false, ok)
-	_, ok = status.State.PotDeparture["1234"]
-	assert.Equal(t, true, ok)
+
 }
 
 
