@@ -1,7 +1,7 @@
 package coms_test
 
 import (
-	"github.com/BrunoMartins11/mid-crowdsensor/src/coms"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"github.com/BrunoMartins11/mid-crowdsensor/test"
 	"github.com/thanhpk/randstr"
 	"net/http"

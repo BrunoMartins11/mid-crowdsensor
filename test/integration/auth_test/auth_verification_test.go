@@ -1,7 +1,7 @@
 package auth_test
 
 import (
-	"github.com/BrunoMartins11/mid-crowdsensor/src/auth"
+	"github.com/BrunoMartins11/mid-crowdsensor/cmd/auth"
 	"github.com/BrunoMartins11/mid-crowdsensor/test"
 	"testing"
 )

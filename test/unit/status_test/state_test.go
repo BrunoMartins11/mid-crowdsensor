@@ -1,7 +1,7 @@
 package status_test
 
 import (
-	"github.com/BrunoMartins11/mid-crowdsensor/src/status"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -67,7 +67,7 @@ func TestManageNewProbeArrival(t *testing.T){
 	status.ManageNewProbe(data)
 	assert.Equal(t, data, status.State.Arrived["123"])
 
-	_, ok :=status.State.PotArrival["123"]
+	_, ok := status.State.PotArrival["123"]
 	assert.Equal(t, false, ok)
 }
 
@@ -81,7 +81,7 @@ func TestManageNewProbeDeparture(t *testing.T){
 	}
 	status.State.PotDeparture[data.MacAddress] = data
 
-	_, ok :=status.State.PotArrival["123"]
+	_, ok := status.State.PotArrival["123"]
 	assert.Equal(t, false, ok)
 
 	status.ManageNewProbe(data)
@@ -106,9 +106,9 @@ func TestCleanUpPotArrival(t *testing.T){
 	status.State.PotArrival[data.MacAddress] = data
 	status.State.PotArrival[data1.MacAddress] = data1
 	status.State.CleanPotArrival()
-	_, ok :=status.State.PotArrival["123"]
+	_, ok := status.State.PotArrival["123"]
 	assert.Equal(t, false, ok)
-	_, ok =status.State.PotArrival["1234"]
+	_, ok = status.State.PotArrival["1234"]
 	assert.Equal(t, true, ok)
 }
 
@@ -131,10 +131,10 @@ func TestCleanUpArrived(t *testing.T){
 	status.State.Arrived[data1.MacAddress] = data1
 
 	status.State.CleanArrived()
-	_, ok :=status.State.Arrived["123"]
+	_, ok := status.State.Arrived["123"]
 	assert.Equal(t, false, ok)
 
-	_, ok =status.State.Arrived["1234"]
+	_, ok = status.State.Arrived["1234"]
 	assert.Equal(t, true, ok)
 }
 
