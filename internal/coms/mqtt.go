@@ -116,7 +116,7 @@ func CreateMQTTClient() MQTT.Client {
 	opts := MQTT.NewClientOptions().AddBroker(os.Getenv("BROKER_URL"))
 	opts.SetClientID(os.Getenv("CLIENT_ID"))
 	opts.SetUsername(os.Getenv("MQTT_TOKEN"))
-	opts.SetPassword("")
+	opts.SetPassword("123")
 	opts.SetDefaultPublishHandler(f)
 	client := MQTT.NewClient(opts)
 	//create a client using the above ClientOptions

@@ -2,11 +2,9 @@ package main
 
 import (
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
-	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
-	"time"
 )
 
 
@@ -18,15 +16,15 @@ func main() {
 	}
 	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
 
-	coms.Client = coms.CreateMQTTClient()
-	status.InitializeRoomState()
-	 go func() {
+	//coms.Client = coms.CreateMQTTClient()
+	//status.InitializeRoomState()
+	 /*go func() {
 			for {
 			time.Sleep(3*time.Minute)
 			status.State.InitializeCleanup()
 		}
 	}()
 	go coms.SubscribeTopic(coms.Client)
-
+*/
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }
