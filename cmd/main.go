@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -29,5 +30,5 @@ func main() {
 	}()
 	go coms.SubscribeTopic(coms.Client)
 
-	log.Fatal(http.ListenAndServe(":1234", nil))
+	log.Fatal(http.ListenAndServe(os.Getenv("PORT"), nil))
 }
