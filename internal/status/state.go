@@ -1,29 +1,39 @@
 package status
 
 import (
+	"encoding/json"
+	"log"
+	"os"
 	"sync"
 	"time"
 )
 
 type ProbeData struct {
+	DeviceID string
 	MacAddress, Rssi string
 	PrevDetected     int64 //in milliseconds
 	Timestamp        time.Time
 }
 
+type Queue interface {
+	PublishToQueue(queueName string, payload []byte)
+}
+
 type RoomState struct {
 	PotArrival, Arrived, PotDeparture map[string]ProbeData // Pot means Potential
 	InUse                             *sync.Mutex
+	mq Queue
 }
 
 var State RoomState
 
-func InitializeRoomState() {
+func InitializeRoomState(queue Queue) {
 	State = RoomState{
 		make(map[string]ProbeData),
 		make(map[string]ProbeData),
 		make(map[string]ProbeData),
 		new(sync.Mutex),
+		queue,
 	}
 }
 
@@ -40,6 +50,7 @@ func ManageNewProbe(probe ProbeData) {
 	if State.CheckPotArrival(probe) {
 		delete(State.PotArrival, probe.MacAddress)
 		State.Arrived[probe.MacAddress] = probe
+		State.mq.PublishToQueue(os.Getenv("queue"), probe.ProbeDataToMsg(true))
 
 	} else if State.CheckArrived(probe) {
 		State.Arrived[probe.MacAddress] = probe
@@ -94,7 +105,35 @@ func (state RoomState) CleanPotDeparture() {
 	for _, val := range state.PotDeparture {
 		if time.Since(val.Timestamp) > time.Minute*3 {
 			delete(state.PotDeparture, val.MacAddress)
+			State.mq.PublishToQueue(os.Getenv("queue"), val.ProbeDataToMsg(false))
 		}
 	}
 	state.InUse.Unlock()
 }
+
+type MSG struct {
+	DeviceID string
+	MacAddress string
+	Active     bool //in milliseconds
+	Timestamp        time.Time
+}
+
+func (data ProbeData) ProbeDataToMsg(active bool) []byte {
+	doc, err := json.Marshal(MSG{
+		data.DeviceID,
+		data.MacAddress,
+		active,
+		data.Timestamp,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return doc
+}
+
+func (state RoomState) PublishMsg(queue string, p []byte) {
+	state.mq.PublishToQueue(queue, p)
+}
+
+
+

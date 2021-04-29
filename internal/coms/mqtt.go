@@ -3,7 +3,7 @@ package coms
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/BrunoMartins11/mid-crowdsensor/cmd/auth"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/auth"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"log"
 	"os"
@@ -107,6 +107,7 @@ func (data ReceivedData) addTimestampToProbes() {
 	for i := range data.ProbeData {
 		currentTime := time.Now()
 		data.ProbeData[i].Timestamp = currentTime
+		data.ProbeData[i].DeviceID = data.DeviceID
 	}
 }
 
@@ -116,7 +117,7 @@ func CreateMQTTClient() MQTT.Client {
 	opts := MQTT.NewClientOptions().AddBroker(os.Getenv("BROKER_URL"))
 	opts.SetClientID(os.Getenv("CLIENT_ID"))
 	opts.SetUsername(os.Getenv("MQTT_TOKEN"))
-	opts.SetPassword("123")
+	opts.SetPassword("")
 	opts.SetDefaultPublishHandler(f)
 	client := MQTT.NewClient(opts)
 	//create a client using the above ClientOptions
