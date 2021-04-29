@@ -1,0 +1,1 @@
+web: bin/go_build_github_com_BrunoMartins11_mid_crowdsensor_cmd
