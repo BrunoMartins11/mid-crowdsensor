@@ -17,6 +17,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
 
 	coms.Client = coms.CreateMQTTClient()
 	status.InitializeRoomState()
