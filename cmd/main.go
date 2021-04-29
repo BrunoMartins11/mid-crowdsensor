@@ -30,5 +30,5 @@ func main() {
 	}()
 	go coms.SubscribeTopic(coms.Client)
 
-	log.Fatal(http.ListenAndServe(os.Getenv("PORT"), nil))
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
 }
