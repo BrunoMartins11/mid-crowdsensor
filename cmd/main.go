@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -13,10 +12,7 @@ import (
 
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+
 	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
 
