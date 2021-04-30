@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"log"
@@ -12,7 +13,7 @@ import (
 
 
 func main() {
-
+	fmt.Println(os.Getenv("PORT"))
 	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
 
