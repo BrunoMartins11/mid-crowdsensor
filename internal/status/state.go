@@ -2,8 +2,10 @@ package status
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -46,7 +48,9 @@ func (state RoomState) InitializeCleanup() {
 func ManageNewProbe(probe ProbeData) {
 	State.InUse.Lock()
 	defer State.InUse.Unlock()
-
+	if v , _  := strconv.Atoi(probe.Rssi); v < -90 {
+		return
+	}
 	if State.CheckPotArrival(probe) {
 		delete(State.PotArrival, probe.MacAddress)
 		State.Arrived[probe.MacAddress] = probe
@@ -62,6 +66,8 @@ func ManageNewProbe(probe ProbeData) {
 	} else {
 		State.PotArrival[probe.MacAddress] = probe
 	}
+	leng := len(State.Arrived)
+	fmt.Println(leng)
 }
 
 func (state RoomState) CheckPotDeparture(probe ProbeData) bool {

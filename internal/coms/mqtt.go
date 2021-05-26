@@ -3,7 +3,6 @@ package coms
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/BrunoMartins11/mid-crowdsensor/internal/auth"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"log"
 	"os"
@@ -46,7 +45,7 @@ func handleFragmentArrival(payload []byte) {
 
 	err := json.Unmarshal(payload, &data)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
 	frag, exists := fragments[data.Id]
@@ -66,29 +65,29 @@ func createProbeData(payload []byte, topic string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if auth.IsValidToken(PreToken + data.Token) {
+	//if auth.IsValidToken(PreToken + data.Token) {
 		data.addTimestampToProbes()
 		for _, val := range data.ProbeData{
 			status.ManageNewProbe(val)
 		}
 		printTopicData(payload, topic)
 		PublishProbesToFirestore(data)
-	}
+	//}
 }
 
 func createProbeDataFromFragments(payload string) {
 	var data ReceivedData
 	err := json.Unmarshal([]byte(payload), &data)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
-	if auth.IsValidToken(PreToken + data.Token) {
+	//if auth.IsValidToken(PreToken + data.Token) {
 		data.addTimestampToProbes()
 		for _, val := range data.ProbeData{
 			status.ManageNewProbe(val)
 		}
 		PublishProbesToFirestore(data)
-	}
+	//}
 }
 
 func printTopicData(payload []byte, topic string) {

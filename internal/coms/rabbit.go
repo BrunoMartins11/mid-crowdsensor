@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/streadway/amqp"
 	"log"
+	"os"
 )
 
 type MQClient struct {
@@ -11,7 +12,7 @@ type MQClient struct {
 }
 
 func CreateMQClient() MQClient{
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(os.Getenv("RABBIT_URL"))
 
 	if err != nil {
 		log.Fatal(err)

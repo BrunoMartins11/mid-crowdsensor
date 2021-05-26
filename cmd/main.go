@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"github.com/joho/godotenv"
@@ -25,14 +25,6 @@ func main() {
 	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
 
 	status.InitializeRoomState(coms.CreateMQClient())
-	msg := MSG{
-		DeviceID:   "s113ebe",
-		MacAddress: "1234",
-		Active:     true,
-		Timestamp:  time.Now(),
-	}
-	p, _ := json.Marshal(msg)
-	status.State.PublishMsg("QueueService1", p)
 
 	coms.Client = coms.CreateMQTTClient()
 
@@ -40,6 +32,7 @@ func main() {
 	 	for {
 			time.Sleep(3*time.Minute)
 			status.State.InitializeCleanup()
+			fmt.Println("Cleanup")
 		}
 	}()
 	go coms.SubscribeTopic(coms.Client)
