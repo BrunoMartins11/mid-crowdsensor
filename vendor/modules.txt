@@ -60,6 +60,9 @@ github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/streadway/amqp v1.0.0
+## explicit
+github.com/streadway/amqp
 # github.com/stretchr/testify v1.5.1
 ## explicit
 github.com/stretchr/testify/assert
