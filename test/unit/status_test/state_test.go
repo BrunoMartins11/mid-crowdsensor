@@ -2,6 +2,7 @@ package status_test
 
 import (
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
+	"github.com/BrunoMartins11/mid-crowdsensor/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -29,7 +30,7 @@ Timestamp:    time.Date(1998, time.August, 1, 1,1,1,1, loc),
 }
 
 func TestCheckPotDeparture(t *testing.T) {
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	assert.Equal(t, false, status.State.CheckPotDeparture(data1))
 
 	status.State.PotDeparture["1234"] = data1
@@ -37,7 +38,7 @@ func TestCheckPotDeparture(t *testing.T) {
 }
 
 func TestCheckPotArrival(t *testing.T) {
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	assert.Equal(t, false, status.State.CheckPotArrival(data1))
 
 	status.State.PotArrival["1234"] = data1
@@ -45,7 +46,7 @@ func TestCheckPotArrival(t *testing.T) {
 }
 
 func TestCheckArrived(t *testing.T) {
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 
 	assert.Equal(t, false, status.State.CheckArrived(data1))
 
@@ -54,7 +55,7 @@ func TestCheckArrived(t *testing.T) {
 }
 
 func TestManageNewProbeArrival(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.ManageNewProbe(data1)
 	assert.Equal(t, data1, status.State.PotArrival[data1.MacAddress])
 
@@ -69,7 +70,7 @@ func TestManageNewProbeArrival(t *testing.T){
 }
 
 func TestManageNewProbeDeparture(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.State.PotDeparture[data1.MacAddress] = data1
 
 	_, ok := status.State.PotArrival["1234"]
@@ -80,7 +81,7 @@ func TestManageNewProbeDeparture(t *testing.T){
 }
 
 func TestCleanUpPotArrival(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.State.PotArrival[data.MacAddress] = data
 	status.State.PotArrival[data1.MacAddress] = data1
 	status.State.CleanPotArrival()
@@ -91,7 +92,7 @@ func TestCleanUpPotArrival(t *testing.T){
 }
 
 func TestCleanUpArrived(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.State.Arrived[data.MacAddress] = data
 	status.State.Arrived[data1.MacAddress] = data1
 
@@ -104,7 +105,7 @@ func TestCleanUpArrived(t *testing.T){
 }
 
 func TestCleanUpPotDeparture(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.State.PotDeparture[data.MacAddress] = data
 	status.State.PotDeparture[data1.MacAddress] = data1
 
@@ -117,7 +118,7 @@ func TestCleanUpPotDeparture(t *testing.T){
 }
 
 func TestInitializeCleanup(t *testing.T){
-	status.InitializeRoomState()
+	status.InitializeRoomState(test.CreateMQClient())
 	status.State.PotArrival[data.MacAddress] = data
 	status.State.Arrived[data.MacAddress] = data
 	status.State.PotDeparture[data2.MacAddress] = data2

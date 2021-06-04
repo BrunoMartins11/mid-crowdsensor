@@ -2,7 +2,9 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/streadway/amqp"
 	"github.com/thanhpk/randstr"
 	"log"
 	"net/http"
@@ -38,4 +40,17 @@ func SetupToken(t *testing.T) string{
 		log.Fatal(err)
 	}
 	return token.Token
+}
+
+type MQClient struct {
+	conn *amqp.Connection
+}
+
+func CreateMQClient() MQClient{
+	return MQClient{}
+}
+
+func (mq MQClient) PublishToQueue(queueName string, payload []byte) {
+
+	fmt.Println("Successfully Published Message to Queue" + queueName + string(payload))
 }
