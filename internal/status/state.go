@@ -54,7 +54,7 @@ func ManageNewProbe(probe ProbeData) {
 	if State.CheckPotArrival(probe) {
 		delete(State.PotArrival, probe.MacAddress)
 		State.Arrived[probe.MacAddress] = probe
-		State.mq.PublishToQueue(os.Getenv("queue"), probe.ProbeDataToMsg(true))
+		State.mq.PublishToQueue(os.Getenv("QUEUE"), probe.ProbeDataToMsg(true))
 
 	} else if State.CheckArrived(probe) {
 		State.Arrived[probe.MacAddress] = probe
@@ -111,7 +111,7 @@ func (state RoomState) CleanPotDeparture() {
 	for _, val := range state.PotDeparture {
 		if time.Since(val.Timestamp) > time.Minute*3 {
 			delete(state.PotDeparture, val.MacAddress)
-			State.mq.PublishToQueue(os.Getenv("queue"), val.ProbeDataToMsg(false))
+			State.mq.PublishToQueue(os.Getenv("QUEUE"), val.ProbeDataToMsg(false))
 		}
 	}
 	state.InUse.Unlock()

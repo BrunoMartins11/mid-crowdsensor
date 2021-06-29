@@ -10,13 +10,6 @@ import (
 	"time"
 )
 
-type MSG struct {
-	DeviceID string
-	MacAddress string
-	Active     bool //in milliseconds
-	Timestamp        time.Time
-}
-
 func main() {
 	err := godotenv.Load()
 	if err != nil {
