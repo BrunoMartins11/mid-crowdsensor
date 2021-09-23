@@ -58,7 +58,6 @@ func ManageNewProbe(probe ProbeData) {
 
 	} else if State.CheckArrived(probe) {
 		State.Arrived[probe.MacAddress] = probe
-
 	} else if State.CheckPotDeparture(probe) {
 		delete(State.PotDeparture, probe.MacAddress)
 		State.Arrived[probe.MacAddress] = probe

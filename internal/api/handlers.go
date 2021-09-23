@@ -1,7 +1,8 @@
-package coms
+package api
 
 import (
 	"encoding/json"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +40,7 @@ func AddDeviceHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	msg := strings.Split(token.Token, ".")
 
-	go PublishToken(device, msg[1]+"."+msg[2], Client)
+	go coms.PublishToken(device, msg[1]+"."+msg[2], coms.Client)
 
 	w.WriteHeader(http.StatusOK)
 }

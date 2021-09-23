@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/api"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"github.com/joho/godotenv"
@@ -11,19 +12,13 @@ import (
 	"time"
 )
 
-type MSG struct {
-	DeviceID string
-	MacAddress string
-	Active     bool //in milliseconds
-	Timestamp        time.Time
-}
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	http.HandleFunc("/addDevice", coms.AddDeviceHandler)
+	http.HandleFunc("/addDevice", api.AddDeviceHandler)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
 
 	status.InitializeRoomState(coms.CreateMQClient())

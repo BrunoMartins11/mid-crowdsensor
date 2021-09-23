@@ -3,6 +3,7 @@ package coms
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/persistence"
 	"github.com/BrunoMartins11/mid-crowdsensor/internal/status"
 	"log"
 	"os"
@@ -71,7 +72,8 @@ func createProbeData(payload []byte, topic string) {
 			status.ManageNewProbe(val)
 		}
 		printTopicData(payload, topic)
-		PublishProbesToFirestore(data)
+		dataP, _ := json.Marshal(data)
+		persistence.PublishProbesToFirestore(dataP)
 	//}
 }
 
@@ -86,7 +88,8 @@ func createProbeDataFromFragments(payload string) {
 		for _, val := range data.ProbeData{
 			status.ManageNewProbe(val)
 		}
-		PublishProbesToFirestore(data)
+	dataP, _ := json.Marshal(data)
+	persistence.PublishProbesToFirestore(dataP)
 	//}
 }
 

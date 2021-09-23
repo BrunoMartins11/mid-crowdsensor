@@ -1,7 +1,7 @@
 package coms_test
 
 import (
-	"github.com/BrunoMartins11/mid-crowdsensor/internal/coms"
+	"github.com/BrunoMartins11/mid-crowdsensor/internal/api"
 	"github.com/BrunoMartins11/mid-crowdsensor/test"
 	"github.com/thanhpk/randstr"
 	"net/http"
@@ -17,7 +17,7 @@ func TestAddDeviceHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(coms.AddDeviceHandler)
+	handler := http.HandlerFunc(api.AddDeviceHandler)
 	handler.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",

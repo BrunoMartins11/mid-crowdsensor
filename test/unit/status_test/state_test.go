@@ -149,3 +149,10 @@ func TestInitializeCleanup(t *testing.T){
 }
 
 
+func TestPublishMessage(t *testing.T){
+	status.InitializeRoomState(test.CreateMQClient())
+	status.State.PublishMsg("hello", []byte("Hello"))
+	assert.Equal(t, true, true)
+}
+
+
